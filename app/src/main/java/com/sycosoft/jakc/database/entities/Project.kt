@@ -40,13 +40,18 @@ data class Project(
     @ColumnInfo(name = "is_complete") private var isComplete: Boolean = false,
     @ColumnInfo(name = "type") private var type: ProjectType = ProjectType.Knitting,
 ) {
+    companion object {
+        const val NAME_LENGTH = 50
+    }
     class ExceptionMessages {
         companion object {
             const val NAME_CANNOT_BE_BLANK = "Name cannot be blank"
+            const val NAME_TOO_LONG = "Name cannot be longer than $NAME_LENGTH characters"
         }
     }
     init {
         require(name.isNotBlank()) { ExceptionMessages.NAME_CANNOT_BE_BLANK }
+        require(name.length < NAME_LENGTH) { ExceptionMessages.NAME_TOO_LONG }
     }
 
     /**
@@ -68,11 +73,15 @@ data class Project(
      *
      */
     fun name(name: String) {
-        if (name.isNotBlank()) {
-            this.name = name
-        } else {
+        if (name.isBlank()) {
             throw IllegalArgumentException(ExceptionMessages.NAME_CANNOT_BE_BLANK)
         }
+
+        if (name.length > NAME_LENGTH) {
+            throw IllegalArgumentException(ExceptionMessages.NAME_TOO_LONG)
+        }
+
+        this.name = name
     }
 
     /**
