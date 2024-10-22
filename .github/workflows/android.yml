@@ -26,10 +26,11 @@ jobs:
     - name: Set up Android SDK
       uses: android-actions/setup-android@v3
       with:
+        cmdline-tools-version: 'latest'
         packages: |
           platform-tools
-          platforms;android-31
-          system-images;android-31;default;x86_64
+          "platforms;android-31"
+          "system-images;android-31;default;x86_64"
           emulator
 
     # Accept Android SDK licenses
