@@ -133,6 +133,8 @@ data class Counter(
         }
 
         currentValue -= incrementBy()
+
+        // TODO: Implement decrementing current resets properly when reset row is set.
     }
 
     /**

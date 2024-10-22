@@ -7,6 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sycosoft.jakc.database.AppDatabase
 import com.sycosoft.jakc.database.entities.Project
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -189,14 +190,154 @@ class ProjectDaoTest {
             runBlocking {
                 dao.insertProject(project2) // Should throw the exception.
             }
-
         }
     }
 
     // endregion
     // region Does Project Exist Tests
 
+    @Test
+    fun whenDoesProjectExist_givenValidId_thenTrueShouldBeReturned() = runBlocking {
+        val project = Project(id = 1, name = "Test Project")
+        dao.insertProject(project)
+        assertTrue(dao.doesProjectExist(project.id()))
+    }
 
+    @Test
+    fun whenDoesProjectExist_givenInvalidId_thenFalseShouldBeReturned() = runBlocking {
+        val project = Project(id = 1, name = "Test Project")
+        assertFalse(dao.doesProjectExist((project.id() + 1)))
+    }
+
+    @Test
+    fun whenDoesProjectExist_givenEmptyDatabase_thenFalseShouldBeReturned() = runBlocking {
+        assertFalse(dao.doesProjectExist(1))
+    }
+
+    @Test
+    fun whenDoesProjectExist_givenDeletedProject_thenFalseShouldBeReturned() = runBlocking {
+        val project = Project(id = 1, name = "Test Project")
+        dao.insertProject(project)
+        dao.deleteProject(project.id())
+
+        assertFalse(dao.doesProjectExist(project.id()))
+    }
+
+    // endregion
+    // region Delete Project
+
+    @Test
+    fun whenDeletingProject_givenValidId_thenProjectShouldBeDeleted() = runBlocking {
+        val project = Project(id = 1, name = "Test Project")
+        dao.insertProject(project)
+
+        val rowsDeleted = dao.deleteProject(project.id())
+
+        assertEquals(1, rowsDeleted)
+    }
+
+    @Test
+    fun whenDeletingProject_givenInvalidId_thenNoProjectShouldBeDeleted() = runBlocking {
+        val project = Project(id = 1, name = "Test Project")
+        dao.insertProject(project)
+
+        val rowsDeleted = dao.deleteProject(project.id() + 1)
+        val projects = dao.getAllProjects()
+
+        assertEquals(0, rowsDeleted)
+        assertEquals(1, projects.size)
+        assertEquals("Test Project", projects[0].name())
+    }
+
+    @Test
+    fun whenDeletingProject_givenEmptyDatabase_thenNoProjectShouldBeDeleted() = runBlocking {
+        val rowsDeleted = dao.deleteProject(1)
+
+        assertEquals(0, rowsDeleted)
+    }
+
+    @Test
+    fun whenDeletingProject_givenMultipleProjects_thenOnlyOneProjectShouldBeDeleted() = runBlocking {
+        val project1 = Project(id = 1, name = "Test Project 1")
+        val project2 = Project(id = 2, name = "Test Project 2")
+        dao.insertProject(project1)
+        dao.insertProject(project2)
+
+        val rowsDeleted = dao.deleteProject(project1.id())
+        val projects = dao.getAllProjects()
+
+        assertEquals(1, rowsDeleted)
+        assertEquals(1, projects.size)
+        assertEquals("Test Project 2", projects[0].name())
+    }
+
+    @Test
+    fun whenDeletingProject_givenMultipleProjects_thenAllProjectsShouldBeDeleted() = runBlocking {
+        val project1 = Project(id = 1, name = "Test Project 1")
+        val project2 = Project(id = 2, name = "Test Project 2")
+
+        dao.insertProject(project1)
+        dao.insertProject(project2)
+
+        val project1Deleted = dao.deleteProject(project1.id())
+        val project2Deleted = dao.deleteProject(project2.id())
+        val projects = dao.getAllProjects()
+
+        assertEquals(1, project1Deleted)
+        assertEquals(1, project2Deleted)
+        assertEquals(0, projects.size)
+    }
+
+    @Test
+    fun whenDeletingProject_givenDeletedProject_thenNoProjectShouldBeDeleted() = runBlocking {
+        val project = Project(id = 1, name = "Test Project")
+        dao.insertProject(project)
+        dao.deleteProject(project.id())
+
+        val rowsDeleted = dao.deleteProject(project.id())
+
+        assertEquals(0, rowsDeleted)
+    }
+
+    // endregion
+    // region Update Project
+
+    @Test
+    fun whenUpdatingProject_givenValidProject_thenProjectShouldBeUpdated() = runBlocking {
+        val project = Project(id = 1, name = "Test Project")
+        dao.insertProject(project)
+
+        val insertedProject = dao.getProjectById(project.id())
+        assertEquals("Test Project", insertedProject?.name())
+
+        project.name("Updated Project Name")
+
+        val rowsUpdated = dao.updateProject(project)
+        val updatedProject = dao.getProjectById(project.id())
+
+        assertEquals(1, rowsUpdated)
+        assertEquals("Updated Project Name", updatedProject?.name())
+    }
+
+    @Test
+    fun whenUpdatingProject_givenNonExistentProject_thenNoProjectShouldBeUpdated() = runBlocking {
+        val project = Project(id = 1, name = "Non-existent project")
+
+        val rowsUpdated = dao.updateProject(project)
+
+        assertEquals(0, rowsUpdated)
+    }
+
+    @Test
+    fun whenDeletingProject_givenProjectWithIdenticalData_thenNoProjectShouldBeUpdated() = runBlocking {
+        val project = Project(id = 1, name = "Same Project")
+        dao.insertProject(project)
+
+        val rowsUpdated = dao.updateProject(project)
+
+        assertEquals(1, rowsUpdated)
+        assertEquals("Same Project", dao.getProjectById(project.id())?.name())
+    }
 
     // endregion
 
