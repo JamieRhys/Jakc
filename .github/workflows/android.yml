@@ -25,7 +25,6 @@ jobs:
       with:
         cmdline-tools-version: 'latest'
         packages: |
-          platform-tools
           platforms;android-34
           system-images;android-34;default;x86_64
           emulator
