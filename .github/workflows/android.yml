@@ -25,17 +25,17 @@ jobs:
       with:
         cmdline-tools-version: 'latest'
         packages: |
-          platform-tools
-          platforms;android-31
-          system-images;android-31;default;x86_64
-          emulator
+          cmdline-tools;latest
 
     - name: Accept SDK licenses
-      run: |
-        yes | sdkmanager --licenses || true
+      run: yes | sdkmanager --licenses || true
 
-    - name: List SDK Packages
+    - name: List Available SDK Packages
       run: sdkmanager --list
+
+    - name: Install Required Packages
+      run: |
+        sdkmanager "platform-tools" "platforms;android-34" "system-images;android-34;default;x86_64" "emulator"
 
     - name: Set environment variables
       run: |
