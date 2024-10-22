@@ -47,14 +47,16 @@ jobs:
 
     - name: Start Emulator
       run: |
+        # Start the emulator in the background
         nohup emulator -avd test -no-window -no-audio -no-boot-anim -accel off &
+  
+        # Wait for the device to be ready
         adb wait-for-device
-        adb shell input keyevent 82 # Unlock screen
-
-    - name: Wait for Emulator to Boot
-      run: |
-        sleep 60
-        adb shell getprop init.svc.bootanim | grep -m 1 stopped
+  
+        # Wait until the emulator has fully booted
+        until adb shell getprop sys.boot_completed | grep -m 1 '1'; do
+          sleep 1
+        done
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
