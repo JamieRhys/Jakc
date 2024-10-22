@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.sycosoft.jakc.database.converters.LocalDateConverter
+import com.sycosoft.jakc.database.dao.PartDao
 import com.sycosoft.jakc.database.dao.ProjectDao
 import com.sycosoft.jakc.database.entities.Project
 
@@ -24,6 +25,7 @@ import com.sycosoft.jakc.database.entities.Project
 @TypeConverters(LocalDateConverter::class)
 abstract class AppDatabase: RoomDatabase() {
     abstract val projectDao: ProjectDao
+    abstract val partDao: PartDao
 
     companion object {
         // This volatile variable ensures that the value is read from and written to main memory directly,
