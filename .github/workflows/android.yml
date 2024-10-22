@@ -25,8 +25,9 @@ jobs:
       with:
         cmdline-tools-version: 'latest'
         packages: |
-          platforms;android-34
-          system-images;android-34;default;x86_64
+          platform-tools
+          platforms;android-31
+          system-images;android-31;default;x86_64
           emulator
 
     - name: Accept SDK licenses
