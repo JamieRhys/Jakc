@@ -8,6 +8,9 @@ import androidx.room.TypeConverters
 import com.sycosoft.jakc.database.converters.LocalDateConverter
 import com.sycosoft.jakc.database.dao.PartDao
 import com.sycosoft.jakc.database.dao.ProjectDao
+import com.sycosoft.jakc.database.entities.EntityCounter
+import com.sycosoft.jakc.database.entities.EntityPart
+import com.sycosoft.jakc.database.entities.EntityProject
 import com.sycosoft.jakc.database.entities.Project
 
 /**
@@ -19,8 +22,12 @@ import com.sycosoft.jakc.database.entities.Project
  */
 // Let's define the databases configuration
 @Database(
-    entities = [Project::class], // List of entity classes that will be a part of the database.
-    version = 1 // The version of the database.
+    entities = [
+        EntityProject::class,
+        EntityPart::class,
+        EntityCounter::class
+    ], // List of entity classes that will be a part of the database.
+    version = 2 // The version of the database.
 )
 @TypeConverters(LocalDateConverter::class)
 abstract class AppDatabase: RoomDatabase() {
