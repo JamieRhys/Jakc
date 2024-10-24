@@ -14,7 +14,7 @@ interface ProjectDao {
     suspend fun getAllProjects(): List<EntityProject>
 
     @Query("SELECT * FROM projects WHERE id = :id")
-    suspend fun getProjectById(id: Long): Project?
+    suspend fun getProjectById(id: Long): EntityProject?
 
     @Insert
     suspend fun insertProject(project: EntityProject): Long
