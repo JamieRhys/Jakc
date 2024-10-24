@@ -8,13 +8,7 @@
       <SelectionState runConfigName="ProjectDaoTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="whenGettingAllProjects_givenLargeNumberOfProjectsInDatabase_thenAllProjectsShouldBeReturned()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="whenGettingAllProjects_givenProjectsWithSpecialCharacterNames_thenAllProjectsShouldBeReturned()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="Tests in 'com.sycosoft.jakc'">
+      <SelectionState runConfigName="PartDaoTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

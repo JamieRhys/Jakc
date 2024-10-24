@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sycosoft.jakc.database.AppDatabase
+import com.sycosoft.jakc.database.entities.EntityProject
 import com.sycosoft.jakc.database.entities.Project
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
@@ -51,8 +52,8 @@ class ProjectDaoTest {
 
     @Test
     fun whenGettingAllProjects_thenAllProjectsShouldBeReturned() = runBlocking {
-        val project1 = Project(id = 1, name = "Test Project 1")
-        val project2 = Project(id = 2, name = "Test Project 2")
+        val project1 = EntityProject(id = 1, name = "Test EntityProject 1")
+        val project2 = EntityProject(id = 2, name = "Test Project 2")
 
         dao.insertProject(project1)
         dao.insertProject(project2)
@@ -66,7 +67,7 @@ class ProjectDaoTest {
 
     @Test
     fun whenGettingAllProjects_givenLargeNumberOfProjectsInDatabase_thenAllProjectsShouldBeReturned() = runBlocking {
-        val projects = List(1000) { Project(id = (it.toLong() + 1), name = "Project $it") }
+        val projects = List(1000) { EntityProject(id = (it.toLong() + 1), name = "Project $it") }
 
         projects.forEach { dao.insertProject(it) }
 
@@ -78,14 +79,14 @@ class ProjectDaoTest {
 
     @Test
     fun whenGettingAllProjects_givenProjectsWithSpecialCharacterNames_thenAllProjectsShouldBeReturned() = runBlocking {
-        val project = Project(id = 1, name = "Project @#$%^&*()_+")
+        val project = EntityProject(id = 1, name = "Project @#$%^&*()_+")
 
         dao.insertProject(project)
 
         val projects = dao.getAllProjects()
 
         assertEquals(1, projects.size)
-        assertEquals("Project @#$%^&*()_+", projects[0].name())
+        assertEquals("Project @#$%^&*()_+", projects[0].name)
     }
 
     // endregion
@@ -93,35 +94,35 @@ class ProjectDaoTest {
 
     @Test
     fun whenGettingProjectById_givenValidId_thenProjectShouldBeReturned() = runBlocking {
-        val project = Project(id = 1, name = "Test Project")
+        val project = EntityProject(id = 1, name = "Test Project")
 
         dao.insertProject(project)
 
-        val retrievedProject = dao.getProjectById(project.id())
+        val retrievedProject = dao.getProjectById(project.id)
 
         assertEquals(project, retrievedProject)
     }
 
     @Test
     fun whenGettingProjectById_givenMultipleProjects_thenCorrectProjectShouldBeReturned() = runBlocking {
-        val project1 = Project(id = 1, name = "Test Project 1")
-        val project2 = Project(id = 2, name = "Test Project 2")
+        val project1 = EntityProject(id = 1, name = "Test Project 1")
+        val project2 = EntityProject(id = 2, name = "Test Project 2")
 
         dao.insertProject(project1)
         dao.insertProject(project2)
 
-        val retrievedProject = dao.getProjectById(project1.id())
+        val retrievedProject = dao.getProjectById(project1.id)
 
         assertEquals(project1, retrievedProject)
     }
 
     @Test
     fun whenGettingProjectById_givenInvalidId_thenNullShouldBeReturned() = runBlocking {
-        val project = Project(id = 1, name = "Test Project")
+        val project = EntityProject(id = 1, name = "Test Project")
 
         dao.insertProject(project)
 
-        val retrievedProject = dao.getProjectById(project.id() + 1)
+        val retrievedProject = dao.getProjectById(project.id + 1)
 
         assertEquals(null, retrievedProject)
     }
@@ -152,37 +153,37 @@ class ProjectDaoTest {
 
     @Test
     fun whenInsertingProject_givenValidProject_thenIdShouldBeReturned() = runBlocking {
-        val project = Project(id = 1, name = "Test Project")
+        val project = EntityProject(id = 1, name = "Test Project")
 
         dao.insertProject(project)
 
-        val retrievedProject = dao.getProjectById(project.id())
+        val retrievedProject = dao.getProjectById(project.id)
 
         assertEquals(project, retrievedProject)
     }
 
     @Test
     fun whenInsertingProject_givenProjectWithoutId_thenIdShouldBeReturned() = runBlocking {
-        val id = dao.insertProject(Project(name = "Test Project"))
+        val id = dao.insertProject(EntityProject(name = "Test Project"))
 
         val project = dao.getProjectById(1)
 
         assertEquals(1, id)
-        assertEquals("Test Project", project?.name())
+        assertEquals("Test Project", project?.name)
     }
 
     @Test
     fun whenInsertingProject_givenMultipleIdLessProjects_thenIdsShouldBeReturned() = runBlocking {
-        val id1 = dao.insertProject(Project(name = "Test Project 1"))
-        val id2 = dao.insertProject(Project(name = "Test Project 2"))
+        val id1 = dao.insertProject(EntityProject(name = "Test Project 1"))
+        val id2 = dao.insertProject(EntityProject(name = "Test Project 2"))
 
         assertTrue(id2 > id1)
     }
 
     @Test
     fun whenInsertingProject_givenDuplicateId_thenExceptionShouldBeThrown() = runTest {
-        val project1 = Project(id = 1, name = "Test Project 1")
-        val project2 = Project(id = 1, name = "Test Project 2")
+        val project1 = EntityProject(id = 1, name = "Test Project 1")
+        val project2 = EntityProject(id = 1, name = "Test Project 2")
 
         dao.insertProject(project1)
 
@@ -198,15 +199,15 @@ class ProjectDaoTest {
 
     @Test
     fun whenDoesProjectExist_givenValidId_thenTrueShouldBeReturned() = runBlocking {
-        val project = Project(id = 1, name = "Test Project")
+        val project = EntityProject(id = 1, name = "Test Project")
         dao.insertProject(project)
-        assertTrue(dao.doesProjectExist(project.id()))
+        assertTrue(dao.doesProjectExist(project.id))
     }
 
     @Test
     fun whenDoesProjectExist_givenInvalidId_thenFalseShouldBeReturned() = runBlocking {
-        val project = Project(id = 1, name = "Test Project")
-        assertFalse(dao.doesProjectExist((project.id() + 1)))
+        val project = EntityProject(id = 1, name = "Test Project")
+        assertFalse(dao.doesProjectExist((project.id + 1)))
     }
 
     @Test
@@ -216,11 +217,11 @@ class ProjectDaoTest {
 
     @Test
     fun whenDoesProjectExist_givenDeletedProject_thenFalseShouldBeReturned() = runBlocking {
-        val project = Project(id = 1, name = "Test Project")
+        val project = EntityProject(id = 1, name = "Test Project")
         dao.insertProject(project)
-        dao.deleteProject(project.id())
+        dao.deleteProject(project.id)
 
-        assertFalse(dao.doesProjectExist(project.id()))
+        assertFalse(dao.doesProjectExist(project.id))
     }
 
     // endregion
@@ -228,25 +229,25 @@ class ProjectDaoTest {
 
     @Test
     fun whenDeletingProject_givenValidId_thenProjectShouldBeDeleted() = runBlocking {
-        val project = Project(id = 1, name = "Test Project")
+        val project = EntityProject(id = 1, name = "Test Project")
         dao.insertProject(project)
 
-        val rowsDeleted = dao.deleteProject(project.id())
+        val rowsDeleted = dao.deleteProject(project.id)
 
         assertEquals(1, rowsDeleted)
     }
 
     @Test
     fun whenDeletingProject_givenInvalidId_thenNoProjectShouldBeDeleted() = runBlocking {
-        val project = Project(id = 1, name = "Test Project")
+        val project = EntityProject(id = 1, name = "Test Project")
         dao.insertProject(project)
 
-        val rowsDeleted = dao.deleteProject(project.id() + 1)
+        val rowsDeleted = dao.deleteProject(project.id + 1)
         val projects = dao.getAllProjects()
 
         assertEquals(0, rowsDeleted)
         assertEquals(1, projects.size)
-        assertEquals("Test Project", projects[0].name())
+        assertEquals("Test Project", projects[0].name)
     }
 
     @Test
@@ -258,29 +259,29 @@ class ProjectDaoTest {
 
     @Test
     fun whenDeletingProject_givenMultipleProjects_thenOnlyOneProjectShouldBeDeleted() = runBlocking {
-        val project1 = Project(id = 1, name = "Test Project 1")
-        val project2 = Project(id = 2, name = "Test Project 2")
+        val project1 = EntityProject(id = 1, name = "Test Project 1")
+        val project2 = EntityProject(id = 2, name = "Test Project 2")
         dao.insertProject(project1)
         dao.insertProject(project2)
 
-        val rowsDeleted = dao.deleteProject(project1.id())
+        val rowsDeleted = dao.deleteProject(project1.id)
         val projects = dao.getAllProjects()
 
         assertEquals(1, rowsDeleted)
         assertEquals(1, projects.size)
-        assertEquals("Test Project 2", projects[0].name())
+        assertEquals("Test Project 2", projects[0].name)
     }
 
     @Test
     fun whenDeletingProject_givenMultipleProjects_thenAllProjectsShouldBeDeleted() = runBlocking {
-        val project1 = Project(id = 1, name = "Test Project 1")
-        val project2 = Project(id = 2, name = "Test Project 2")
+        val project1 = EntityProject(id = 1, name = "Test Project 1")
+        val project2 = EntityProject(id = 2, name = "Test Project 2")
 
         dao.insertProject(project1)
         dao.insertProject(project2)
 
-        val project1Deleted = dao.deleteProject(project1.id())
-        val project2Deleted = dao.deleteProject(project2.id())
+        val project1Deleted = dao.deleteProject(project1.id)
+        val project2Deleted = dao.deleteProject(project2.id)
         val projects = dao.getAllProjects()
 
         assertEquals(1, project1Deleted)
@@ -290,11 +291,11 @@ class ProjectDaoTest {
 
     @Test
     fun whenDeletingProject_givenDeletedProject_thenNoProjectShouldBeDeleted() = runBlocking {
-        val project = Project(id = 1, name = "Test Project")
+        val project = EntityProject(id = 1, name = "Test Project")
         dao.insertProject(project)
-        dao.deleteProject(project.id())
+        dao.deleteProject(project.id)
 
-        val rowsDeleted = dao.deleteProject(project.id())
+        val rowsDeleted = dao.deleteProject(project.id)
 
         assertEquals(0, rowsDeleted)
     }
@@ -304,24 +305,22 @@ class ProjectDaoTest {
 
     @Test
     fun whenUpdatingProject_givenValidProject_thenProjectShouldBeUpdated() = runBlocking {
-        val project = Project(id = 1, name = "Test Project")
+        val project = EntityProject(id = 1, name = "Test Project")
         dao.insertProject(project)
 
-        val insertedProject = dao.getProjectById(project.id())
-        assertEquals("Test Project", insertedProject?.name())
+        val insertedProject = dao.getProjectById(project.id)
+        assertEquals("Test Project", insertedProject?.name)
 
-        project.name("Updated Project Name")
-
-        val rowsUpdated = dao.updateProject(project)
-        val updatedProject = dao.getProjectById(project.id())
+        val rowsUpdated = dao.updateProject(project.copy(name = "Updated Project Name"))
+        val updatedProject = dao.getProjectById(project.id)
 
         assertEquals(1, rowsUpdated)
-        assertEquals("Updated Project Name", updatedProject?.name())
+        assertEquals("Updated Project Name", updatedProject?.name)
     }
 
     @Test
     fun whenUpdatingProject_givenNonExistentProject_thenNoProjectShouldBeUpdated() = runBlocking {
-        val project = Project(id = 1, name = "Non-existent project")
+        val project = EntityProject(id = 1, name = "Non-existent project")
 
         val rowsUpdated = dao.updateProject(project)
 
@@ -330,13 +329,13 @@ class ProjectDaoTest {
 
     @Test
     fun whenDeletingProject_givenProjectWithIdenticalData_thenNoProjectShouldBeUpdated() = runBlocking {
-        val project = Project(id = 1, name = "Same Project")
+        val project = EntityProject(id = 1, name = "Same Project")
         dao.insertProject(project)
 
         val rowsUpdated = dao.updateProject(project)
 
         assertEquals(1, rowsUpdated)
-        assertEquals("Same Project", dao.getProjectById(project.id())?.name())
+        assertEquals("Same Project", dao.getProjectById(project.id)?.name)
     }
 
     // endregion
